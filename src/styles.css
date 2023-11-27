@@ -29,8 +29,9 @@ html {
   
   #btn-scan-qr {
     cursor: pointer;
-    width:100px;
-    height: 100px
+    width:200px;
+    height: 200px;
+    font-family: 'Roboto', sans-serif;;
   }
   
   #btn-scan-qr img {
