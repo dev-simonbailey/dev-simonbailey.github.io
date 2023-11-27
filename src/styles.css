@@ -29,6 +29,8 @@ html {
   
   #btn-scan-qr {
     cursor: pointer;
+    width:100px;
+    height: 100px
   }
   
   #btn-scan-qr img {
