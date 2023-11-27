@@ -40,6 +40,7 @@ html {
     padding: 15px;
     margin: 15px;
     background: white;
+    border-radius: 10px;
   }
   
   #qr-result {
