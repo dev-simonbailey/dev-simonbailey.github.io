@@ -13,7 +13,9 @@ let scanning = false;
 qrcode.callback = (res) => {
   if (res) {
     var dataArray = res.split('|');
+    console.log('Verify:');
     console.log(dataArray[0]);
+    console.log('Data:');
     console.log(dataArray[1]);
     outputData.innerText = res;
     scanning = false;
