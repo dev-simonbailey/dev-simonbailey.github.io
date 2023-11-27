@@ -14,6 +14,7 @@ html {
     color: white;
     margin: 0;
     padding: 15px;
+    font-family:monospace;
   }
   
   #container {
@@ -31,7 +32,7 @@ html {
     cursor: pointer;
     width:200px;
     height: 200px;
-    font-family: 'Roboto', sans-serif;;
+    font-family: monospace;
   }
   
   #btn-scan-qr img {
