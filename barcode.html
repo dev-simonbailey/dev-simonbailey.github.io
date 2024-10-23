@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Barcode Scanner with Beep</title>
+  <title>Multi-Barcode Scanner with Display</title>
   <style>
     /* Basic layout styles */
     body {
@@ -14,8 +14,17 @@
       padding: 20px;
     }
 
-    input, button {
-      margin: 10px 0;
+    #scanned-barcode {
+      width: 100%;
+      max-width: 400px;
+      background-color: #d4edda;
+      color: #155724;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      display: none; /* Initially hidden until a barcode is scanned */
     }
 
     #preview {
@@ -23,14 +32,27 @@
       max-width: 400px;
       height: auto;
       border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      max-width: 400px;
+      height: 100px;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    button {
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <h1>Multi-Barcode Scanner with Beep</h1>
-  
-  <!-- Input field to display scanned barcodes -->
-  <input type="text" id="barcode-field" placeholder="Scanned Barcodes (CSV)" readonly>
+  <h1>Multi-Barcode Scanner</h1>
+
+  <!-- Div to display the most recent scanned barcode -->
+  <div id="scanned-barcode"></div>
   
   <!-- Video preview for scanning -->
   <video id="preview" autoplay playsinline></video>
@@ -38,11 +60,13 @@
   <!-- Button to start and stop the barcode scan -->
   <button id="scan-button">Start Scanning</button>
 
+  <!-- Textarea to display scanned barcodes in CSV format at the bottom -->
+  <textarea id="barcode-field" placeholder="Scanned Barcodes (CSV)" readonly></textarea>
+
   <!-- Audio element for beep sound -->
   <audio id="beep-sound">
-    <source src="beep-07a.mp3" type="audio/mpeg">
-    <!-- Add a fallback in case the browser doesn't support the format -->
-    <source src="beep-07a.wav" type="audio/wav">
+    <source src="beep.mp3" type="audio/mpeg">
+    <source src="beep.wav" type="audio/wav">
     Your browser does not support the audio element.
   </audio>
 
@@ -60,6 +84,8 @@
       document.getElementById('scan-button').addEventListener('click', async () => {
         const button = document.getElementById('scan-button');
         const beepSound = document.getElementById('beep-sound'); // Get the beep sound element
+        const scannedDiv = document.getElementById('scanned-barcode'); // Get the div for displaying the latest barcode
+        const textarea = document.getElementById('barcode-field'); // Get the textarea element for CSV string
         
         if (!scanning) {
           // Start scanning
@@ -82,8 +108,13 @@
               // Check if barcode is already in the list to avoid duplicates
               if (!barcodeList.includes(newBarcode)) {
                 barcodeList.push(newBarcode);
-                // Update the input field with the CSV string
-                document.getElementById('barcode-field').value = barcodeList.join(', ');
+
+                // Update the textarea with the CSV string
+                textarea.value = barcodeList.join(', ');
+
+                // Display the scanned barcode in the div with a green background
+                scannedDiv.textContent = newBarcode;
+                scannedDiv.style.display = 'block'; // Show the div
 
                 // Play the beep sound for a successful scan
                 beepSound.play();
@@ -102,8 +133,8 @@
           video.pause();
           stream.getTracks().forEach(track => track.stop());
 
-          // Clean up the trailing comma in the input field
-          document.getElementById('barcode-field').value = barcodeList.join(', ').replace(/, $/, '');
+          // Clean up the trailing comma in the textarea
+          textarea.value = barcodeList.join(', ').replace(/, $/, '');
         }
       });
     } else {
