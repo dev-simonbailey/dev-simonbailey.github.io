@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode Scanner with Preview and Crosshairs</title>
+  <title>Barcode Scanner with Preview</title>
   <style>
-    /* Basic layout styles */
+    /* Add some basic styles for better layout */
     body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -18,71 +18,24 @@
       margin: 10px 0;
     }
 
-    /* Container for video and crosshairs */
-    #preview-container {
-      position: relative;
+    #preview {
       width: 100%;
       max-width: 400px;
       height: auto;
-    }
-
-    /* Video preview styles */
-    #preview {
-      width: 100%;
-      height: auto;
       border: 1px solid #ccc;
-    }
-
-    /* Crosshairs styling */
-    #crosshairs {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100px;
-      height: 100px;
-      margin-left: -50px; /* Centers horizontally */
-      margin-top: -50px;  /* Centers vertically */
-      border: 2px solid red;
-      pointer-events: none; /* Crosshairs won't block interactions */
-      z-index: 2; /* Ensure it stays on top of the video */
-    }
-
-    /* Crosshairs lines */
-    #crosshairs::before, #crosshairs::after {
-      content: '';
-      position: absolute;
-      background-color: red;
-    }
-
-    #crosshairs::before {
-      width: 100%;
-      height: 2px;
-      top: 50%;
-      left: 0;
-    }
-
-    #crosshairs::after {
-      width: 2px;
-      height: 100%;
-      top: 0;
-      left: 50%;
     }
   </style>
 </head>
 <body>
-  <h1>Barcode Scanner V1.1</h1>
+  <h1>Barcode Scanner V1.2</h1>
   
-  <!-- Input field to display scanned barcode -->
+  <!-- Text field to store the scanned barcode -->
   <input type="text" id="barcode-field" placeholder="Scanned Barcode" readonly>
   
-  <!-- Video container for preview and crosshairs -->
-  <div id="preview-container">
-    <video id="preview" autoplay playsinline></video>
-    <!-- Crosshairs -->
-    <div id="crosshairs"></div>
-  </div>
+  <!-- Video preview for scanning -->
+  <video id="preview" autoplay playsinline></video>
   
-  <!-- Button to start the scan -->
+  <!-- Button to start the barcode scan -->
   <button id="scan-button">Start Scanning</button>
 
   <script>
@@ -90,21 +43,32 @@
     if ('BarcodeDetector' in window) {
       const barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'qr_code'] });
 
-      // Button click to start scanning
+      // Button to trigger the barcode scan
       document.getElementById('scan-button').addEventListener('click', async () => {
         try {
           // Get access to the user's camera
           const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-          // Set the stream to the video element
+          
+          // Display the video stream in the preview window
           const video = document.getElementById('preview');
           video.srcObject = stream;
           video.play();
 
-          // Start scanning barcodes from the video stream
+          // Create an interval to check for barcodes
           const barcodeScanInterval = setInterval(async () => {
             const barcodes = await barcodeDetector.detect(video);
 
             if (barcodes.length > 0) {
-              // Display the detected barcode in the input field
-              document.getElementById​⬤
+              // Get the first detected barcode and store it in the text field
+              document.getElementById('barcode-field').value = barcodes[0].rawValue;
+              clearInterval(barcodeScanInterval); // Stop scanning
+              video.pause(); // Stop the video stream
+              stream.getTracks().forEach(track => track.stop()); // Stop the camera
+            }
+          }, 1000);
+        } catch (error) {
+          console.error('Error accessing the camera or detecting barcode:', error);
+        }
+      });
+    } else {
+      alert('Barcode Detection API​⬤
