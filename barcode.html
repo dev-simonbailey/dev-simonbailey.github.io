@@ -3,21 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode Scanner</title>
+  <title>Barcode Scanner with Preview</title>
+  <style>
+    /* Add some basic styles for better layout */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    input, button {
+      margin: 10px 0;
+    }
+
+    #preview {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
   <h1>Barcode Scanner</h1>
   
-  <!-- Text field to store the barcode -->
+  <!-- Text field to store the scanned barcode -->
   <input type="text" id="barcode-field" placeholder="Scanned Barcode" readonly>
   
+  <!-- Video preview for scanning -->
+  <video id="preview" autoplay playsinline></video>
+  
   <!-- Button to start the barcode scan -->
-  <button id="scan-button">Scan Barcode</button>
+  <button id="scan-button">Start Scanning</button>
 
   <script>
     // Check if the Barcode Detector API is supported
     if ('BarcodeDetector' in window) {
-      // Define the supported barcode formats
       const barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'qr_code'] });
 
       // Button to trigger the barcode scan
@@ -25,7 +48,9 @@
         try {
           // Get access to the user's camera
           const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          const video = document.createElement('video');
+          
+          // Display the video stream in the preview window
+          const video = document.getElementById('preview');
           video.srcObject = stream;
           video.play();
 
