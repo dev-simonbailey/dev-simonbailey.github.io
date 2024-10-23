@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Scanner</title>
+</head>
+<body>
+  <h1>Barcode Scanner</h1>
+  
+  <!-- Text field to store the barcode -->
+  <input type="text" id="barcode-field" placeholder="Scanned Barcode" readonly>
+  
+  <!-- Button to start the barcode scan -->
+  <button id="scan-button">Scan Barcode</button>
+
+  <script>
+    // Check if the Barcode Detector API is supported
+    if ('BarcodeDetector' in window) {
+      // Define the supported barcode formats
+      const barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'qr_code'] });
+
+      // Button to trigger the barcode scan
+      document.getElementById('scan-button').addEventListener('click', async () => {
+        try {
+          // Get access to the user's camera
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          const video = document.createElement('video');
+          video.srcObject = stream;
+          video.play();
+
+          // Create an interval to check for barcodes
+          const barcodeScanInterval = setInterval(async () => {
+            const barcodes = await barcodeDetector.detect(video);
+
+            if (barcodes.length > 0) {
+              // Get the first detected barcode and store it in the text field
+              document.getElementById('barcode-field').value = barcodes[0].rawValue;
+              clearInterval(barcodeScanInterval); // Stop scanning
+              video.pause(); // Stop the video stream
+              stream.getTracks().forEach(track => track.stop()); // Stop the camera
+            }
+          }, 1000);
+        } catch (error) {
+          console.error('Error accessing the camera or detecting barcode:', error);
+        }
+      });
+    } else {
+      alert('Barcode Detection API is not supported on this browser.');
+    }
+  </script>
+</body>
+</html>
